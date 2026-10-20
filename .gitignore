@@ -1,0 +1,21 @@
+# File temporanei LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bcf
+*.run.xml
+build/
+
+# PDF generati (se vuoi che vengano ricompilati solo sul cloud e non tracciati qui)
+main.pdf
+
+# Archivi compressi e file di backup
+*.zip
+*.rar
+*.bak

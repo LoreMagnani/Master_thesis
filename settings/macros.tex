@@ -1,0 +1,22 @@
+% ============================================================
+% macros.tex -- comandi personalizzati
+% ============================================================
+
+% Segnaposto rosso per citazioni/parti da completare
+\newcommand{\todo}[1]{\textcolor{red}{[#1]}}
+
+% Segnaposto per figure da inserire (testo rosso in un riquadro)
+\newcommand{\figplaceholder}[1]{\fbox{\parbox[c][5cm][c]{0.85\textwidth}{\centering\textcolor{red}{#1}}}}
+
+% Footnote con numeri romani
+\renewcommand{\thefootnote}{\roman{footnote}}
+
+% Shortcut
+\newcommand{\GeV}{\mathrm{GeV}}
+\newcommand{\MeV}{\mathrm{MeV}}
+\newcommand{\keV}{\mathrm{keV}}
+\newcommand{\TeV}{\mathrm{TeV}}
+
+% Variabile e comando per personalizzare il testo in alto a destra nei capitoli
+\newcommand{\MioTestoCapitolo}{}
+\newcommand{\testocapitolo}[1]{\renewcommand{\MioTestoCapitolo}{#1}}

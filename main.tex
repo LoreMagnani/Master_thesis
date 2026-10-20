@@ -1,0 +1,50 @@
+\documentclass[11spt,twoside,a4paper,fleqn,openright]{book}
+% 12pt         è la dimensione del carattere
+% twoside      è per avere fronte/retro
+% A4paper      si spiega da solo
+% fleqn        è per avere le equazioni allineate a sx
+% openright    è per iniziare i capitoli sempre a destra
+
+% ------------------------------------------------------------
+% Pacchetti e impostazioni generali
+% ------------------------------------------------------------
+\input{settings/preamble}
+\input{settings/macros}
+
+% Decommenta per compilare solo alcuni capitoli (più veloce):
+% \includeonly{chapters/01_introduction}
+
+\begin{document}
+
+% ------------------------------------------------------------
+% Frontmatter
+% ------------------------------------------------------------
+\input{frontmatter/titlepage}
+%\input{frontmatter/acknowledgements}   % decommenta per includere i ringraziamenti
+\input{frontmatter/abstract}
+
+\pagestyle{empty}
+
+\tableofcontents
+
+\pagestyle{fancyplain}
+\input{settings/headers}
+
+% ------------------------------------------------------------
+% Capitoli
+% ------------------------------------------------------------
+\include{chapters/01_introduction}
+\include{chapters/02_simulation}
+\include{chapters/03_classification}
+\include{chapters/04_significance}
+\include{chapters/05_conclusion}
+
+% ------------------------------------------------------------
+% Bibliografia
+% ------------------------------------------------------------
+\testocapitolo{}
+\printbibliography[heading=bibintoc]
+
+\include{frontmatter/acknowledgements}
+
+\end{document}

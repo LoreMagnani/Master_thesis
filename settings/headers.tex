@@ -1,0 +1,50 @@
+\begin{comment}
+% ============================================================
+% headers.tex -- intestazioni e piè di pagina (fancyhdr)
+% Va incluso dopo \pagestyle{fancyplain}
+% ============================================================
+
+\addtolength{\headwidth}{\marginparsep}
+\addtolength{\headwidth}{\marginparwidth}
+% remember chapter title
+\renewcommand{\chaptermark}[1]{\markboth{{\chaptername\ \thechapter}\ \--- #1}{}} %{\markboth{#1}{#1}}
+% section number and title
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ \ #1}}
+\lhead[\fancyplain{\emph{\MioTestoCapitolo}}{\thepage}]{\fancyplain{}{\emph\rightmark}}
+\rhead[\fancyplain{\emph{\MioTestoCapitolo}}{\emph\leftmark}]{\fancyplain{}{\thepage}}
+\cfoot{}
+\end{comment}
+
+
+% Da qua è fatto da Gemini, e mi fido il giusto
+% ============================================================
+% headers.tex -- intestazioni e piè di pagina (fancyhdr)
+% ============================================================
+
+% COMMENTATO PER EVITARE CHE L'INTESTAZIONE SBORDI DAI BORDI:
+% \addtolength{\headwidth}{\marginparsep}
+% \addtolength{\headwidth}{\marginparwidth}
+
+\pagestyle{fancy}
+\fancyhf{} % Pulisce tutte le intestazioni e piè di pagina
+
+% --- PAGINE NORMALI (Corpo del capitolo) ---
+\renewcommand{\chaptermark}[1]{\markboth{{\chaptername\ \thechapter}\ \--- #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ \ #1}}
+
+% Intestazioni standard per le pagine interne (es. numero di pagina a sinistra/destra)
+\lhead[\fancyplain{}{\thepage}]{\fancyplain{}{\emph\rightmark}}
+\rhead[\fancyplain{}{\emph\leftmark}]{\fancyplain{}{\thepage}}
+\cfoot{}
+
+% --- PAGINE INIZIALI DEI CAPITOLI (Stile "plain") ---
+\fancypagestyle{plain}{
+    \fancyhf{} % Pulisce l'intestazione predefinita della prima pagina del capitolo
+    
+    % Se vuoi il testo a DESTRA sia per pagine pari che dispari (o layout a pagina singola):
+    \fancyhead[R]{\emph{\MioTestoCapitolo}}
+    
+    % (Se invece usi il fronte-retro e lo vuoi sempre in alto a DESTRA nella pagina dispari, usa \fancyhead[RO])
+    
+    \renewcommand{\headrulewidth}{0pt} % Rimuove la linea orizzontale sotto l'intestazione (opzionale)
+}

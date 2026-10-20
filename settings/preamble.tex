@@ -1,0 +1,44 @@
+% ============================================================
+% preamble.tex -- pacchetti e impostazioni generali
+% ============================================================
+
+% --- Lingua e codifica ---
+% \usepackage[english,italian]{babel}  % per la lingua: cambia il nome dei capitoli in italiano
+\usepackage[utf8]{inputenc}
+
+% --- Figure ---
+\usepackage[dvips]{graphicx}         % per inserire le immagini
+\graphicspath{ {./images/} }
+\usepackage{subfigure}               % per strutturare le immagini
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{mwe}
+\usepackage{adjustbox}
+
+% --- Matematica e simboli ---
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+
+% --- Tabelle e colori ---
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
+\usepackage{tablefootnote}
+
+% --- Layout e testo ---
+\usepackage{fancyhdr}   % per la righetta fottuta & co.
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{verbatim}   % per usare \begin{comment}
+\usepackage{listings}
+\usepackage{syntonly}   % per usare il comando syntaxonly
+\usepackage[bottom]{footmisc}
+%\usepackage{rotating}  % chissà a che serve?
+\setlength{\headheight}{14.5pt}
+
+% --- Link e bibliografia ---
+\usepackage{hyperref}
+\usepackage[backend=biber,style=ieee]{biblatex}
+\addbibresource{bibliografia.bib}

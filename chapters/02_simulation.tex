@@ -1,0 +1,73 @@
+\testocapitolo{A rigà, qua a 'na certa bisogna anà 'mbavati}
+\chapter{Event Simulation and Tagging}
+\label{ch:simulation}
+
+Lo studio si concentra su processi di VBS con stato finale puramente leptonico alla soglia energetica ottimizzata per l'Higgstrahlung ($240\,\GeV$). Lo stato iniziale è sempre una collisione $e^+e^-$ come previsto dal programma di FCC-ee, e si sono considerati tutti gli stati finali possibili, considerando tutte le possibili combinazioni di decadiemnti leptonici per i bosoni vettori coinvolti.
+
+Si sono considerati tutti i possibili canali di VBS accessibili a FCC-ee: VBS-WW, VBS-ZZ e VBS-WZ. 
+
+Per ogni caso viene effettuata una simulazione, tramite MadGraph5\_amcNLO \todo{come nota a pié di pagina diciamo che abbiamo usato la versione 2.9.18, la più recente in grado di girare sul cluster}, del processo inclusivo. Si individuano 3 categorie di processi, in base alla composizione dello stato finale: $$e^+e^-\,>\,l^+l^-l^+l^-l^+l^-;$$ $$e^+e^-\,>\,l^+l^-l^+l^-\nu_l\bar \nu_l;$$ $$e^+e^-\,>\,l^+l^-\nu_l\bar \nu_l\nu_l\bar \nu_l$$; con $l^\pm = e^\pm \mu^\pm \tau^\pm$ e $\nu_l = \nu_e \nu_\mu \nu_\tau$.
+
+\todo{Inserire immagini di diversi processi di VBS con diversi stati finali}
+
+Per validare se successive selezioni (vd section \ref{sec:tagging}) viene effettuata una seconda serie di simulazioni dei processi $$e^+e^-\,>\,e^+e^-ZZ$$, $$e^+e^-\,>\,\nu_l\bar \nu_lZZ;$$ $$e^+e^-\,>\,e^+e^-W^+W^-;$$ $$e^+e^-\,>\,\nu_l\bar \nu_lW^+W^-;$$ $$e^+e^-\,>\,\bar \nu_le^-W^+Z;$$ $$e^+e^-\,>\,\nu_le^+W^-Z;$$ con successiva inclusione dei decadimenti di $W$ e $Z$ tramite madspin $$Z\,>\,l^+l^-\,;\,Z\,>\,\nu_l\bar \nu_l\,;\,W^+\,>\,l^+\nu_l\,;\,W^-\,>\,l^-\bar \nu_l$$.
+
+Al momento della simulazione si sono usate le opzioni "$zerowidth\_corssection$ = False" e "$grouping\_subprocess$ = False" per permettere la convergenza dei calcoli e delle integrazioni senza perdere strutture potenzialmente interessanti dello spazio delle fasi.
+
+Sono stati effettuati dei tagli su pseudorapidità a $dr\,=\,\sqrt{\eta^2+\phi^2}$ coerenti con le geometrie e eaccettanze previste dai rivelatori attualmente in corso di studio per FCC-ee.
+\todo{Inserire tabella con tagli apportati nelle simulazioni}
+\todo{Inserire plot con differenze tra simulazioni con tagli diversi}
+\todo{Spiegare dal plot le motivazioni che hanno spinto a modificare i tagli}
+
+Avendo solo vertici EW nei processi simulati, per calcolare l'errore sulla cross-section si sono effettuate simulazioni distinte variando i valori del parametro EW aEWM1 tra quelli conosciuti: $\alpha_{EW}(0)\,=\,137.036$ e $\alpha_{EW}(Z)\,=\,128.917$ per i quali si ottengono i valori 0.9758/1.0255 (processo con 4 leptoni carichi in stato finale); 0.9717/1.0260 (processo con 2 leptoni carichi in stato finale); 0.9658/1.0422 (processo con 6 leptoni carichi in stato finale). Come baseline era stato usato $G_\mu\,=\,132.507$. Questa viene tenuta come incertezza sul valore della cross-section \todo{spiegare come modificando il solo aEWM1 si ottengano variazioni sui valori di $M_W$, senza bisongo di toccare $G_F$ e $M_Z$}
+
+
+\section{Scan of the Cross-section}
+Per scegliere la soglia energetica a cui iniziare lo studio della VBS si sono eseguite simulazioni per diversi canali, senza far decadere i bosoni vettori prodotti a seguito dello scattering, per eseguire una scansione della cross section a diverse energie.
+I processi simulati in questa fase sono: $$e^+e^-\,>\,e^+e^-ZZ$$, $$e^+e^-\,>\,\nu_l\bar \nu_lZZ;$$ $$e^+e^-\,>\,e^+e^-W^+W^-;$$ $$e^+e^-\,>\,\nu_l\bar \nu_lW^+W^-;$$ $$e^+e^-\,>\,\bar \nu_le^-W^+Z;$$ $$e^+e^-\,>\,\nu_le^+W^-Z;$$. Per ogni processo si sono simulati 10000 eventi, per assicurarsi di stabilizzare il valore della cross-section e se ne è estratto il valore. La scansione viene effettuata per energie tra $158\GeV$ e $365\GeV$ a step di $1\GeV$. I valori ottenuti ad ogni energia sono interpolati e riportati nei seguenti plot.
+\todo{Inserire i diversi plot per i vari processi}.
+\todo{Inserire anche immagine e spiegazione del perché la sezione d'urto per WZ ha quella forma (vd immagine condivisa su Mattermost)}
+\todo{Commenti sulla cross section che ha l'andamento previsto}
+\todo{Inserire anche schema di luminosità usato}
+Si è scelto di lavorare alla prima soglia energetica per cui si osserva la produzione on-shell di entrambi i bosoni vettori: $240\,\GeV$.
+\todo{Mostra il plot riassuntivo con tutti i processi}
+\todo{A conti fatti il canale WZ non è così dominante come appare. L'alta cross section dovrebbe essere dovuta a diagrammi che non sono di VBS ma che dominano alle energie ottimizzate per l'Higgstrahlung}
+
+
+\section{Tagging of the events}
+\label{sec:tagging}
+\todo{link alla cartella github con il codice che ho scritto per la classifocazione}
+Ogni evento simulato viene quindi classificato in una di 7 diverse categorie esclusive tramite un algoritmo di scelta definito appositamente per distinguere 5 diversi canali di VBS e due tipi di fondo.
+\todo{Inserire tabella con diversi canali e categorie di suddivisione}
+Nel caso di eventi con sei leptoni carichi nello stato finale, solo i canali ZZ e ZZ+H saranno disponibili, in quanto, limitandosi a eventi puramente leptonici, il decadimento del W richiederebbe comunque la presenza di neutrini.
+I canali WW+H e ZZ+H si riferiscono a canali di VBS con WW o ZZ in stato finale, e con produzione on-shell di un boosone di Higgs virtuale.
+Questo algoritmo assume che ci siano sempre sei leptoni nello stato finale e si basa sulle informazioni di gen level contenute nei file LHE \footnotetext{Les Hounces Events} prodotti dalle simulazioni MadGraph5 (MG5).
+Per i canali WW, ZZ e WZ la selezione segue le seguenti regole:
+\begin{itemize}
+    \item Si devono avere sei leptoni in stato finale, divisi in tre coppie che abbiamo stesso flavor e segno opposto;
+    \item le madri dei leptoni di una di queste coppie devono essere gli $e^+e^-$ iniziali;
+    \item le restanti coppie devono avere come madri due bosoni vettori diversi in stato intermedio (un bosone per ogni coppia);
+    \item le madri dei bosoni vettori in stato intermedio devono essere i due $e^+e^-$ iniziali.
+\end{itemize}
+
+per i canali WW+H e ZZ+H le regole cambiano leggermente:
+\begin{itemize}
+    \item Si devono avere sei leptoni in stato finale, divisi in tre coppie che abbiamo stesso flavor e segno opposto;
+    \item le madri dei leptoni di una di queste coppie devono essere gli $e^+e^-$ iniziali;
+    \item i leptoni di un'altra coppia devono avere come madre un bosone vettori diversi in stato intermedio;
+    \item i leptoni dell'ultima coppia devono avere come madre un bosone di Higgs in stato intermedio;
+    \item la madre del bosone vettore deve essere il bosone di Higgs;
+    \item le madri del bosone di Higgs in stato intermedio devono essere i due $e^+e^-$ iniziali.
+\end{itemize}
+\todo{Spiegare perché abbiamo un solo V on-shell (vd massa Higgs)}
+
+\todo{Tabelle con percentuali di eventi in ogni label}
+\todo{Verifica che la frazione di eventi in ogni label è coerente con le sezioni d'urto previste da Madspin --> almeno guardando a xs}
+
+
+\section{Kinematic features extraction}
+Per ogni categoria di eventi, si è scelta una strategia diversa per la ricostruzione degli eventi.
+\subsection{Eventi con sei leptoni carichi}
+\todo{strategia di ricostruzione con 6 leptoni carichi}
+
+
