@@ -1,0 +1,23 @@
+name: Compila Tesi LaTeX
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica il codice dal repo
+        uses: actions/checkout@v4
+
+      - name: Compila il documento LaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+
+      - name: Carica il PDF compilato su GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tesi-PDF
+          path: main.pdf
