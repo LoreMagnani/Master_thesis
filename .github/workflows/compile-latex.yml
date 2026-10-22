@@ -1,4 +1,4 @@
-name: Compila Tesi LaTeX
+name: Compila e Sincronizza su Drive
 
 on:
   push:
@@ -16,8 +16,10 @@ jobs:
         with:
           root_file: main.tex
 
-      - name: Carica il PDF compilato su GitHub
-        uses: actions/upload-artifact@v4
+      - name: Carica su Google Drive
+        uses: adrive/drive-upload-action@v1
         with:
-          name: Tesi-PDF
-          path: main.pdf
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          filename: main.pdf
+          folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
+          overwrite: true
