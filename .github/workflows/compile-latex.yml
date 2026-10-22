@@ -18,66 +18,72 @@ jobs:
 
       - name: Carica su Google Drive
         env:
-          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
+          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+          GDRIVE_REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
         run: |
           python3 - << 'EOF'
           import os
-          import json
-          from google.oauth2 import service_account
-          import google.auth.transport.requests
           import requests
 
-          creds_json = os.environ.get("GDRIVE_CREDENTIALS")
+          client_id = os.environ.get("GDRIVE_CLIENT_ID")
+          client_secret = os.environ.get("GDRIVE_CLIENT_SECRET")
+          refresh_token = os.environ.get("GDRIVE_REFRESH_TOKEN")
           folder_id = os.environ.get("GDRIVE_FOLDER_ID")
-          
-          info = json.loads(creds_json)
-          creds = service_account.Credentials.from_service_account_info(
-              info, scopes=['https://www.googleapis.com/auth/drive']
-          )
-          
-          auth_req = google.auth.transport.requests.Request()
-          creds.refresh(auth_req)
-          token = creds.token
 
+          # 1. Ottieni un nuovo Access Token usando il Refresh Token
+          token_url = "https://oauth2.googleapis.com/token"
+          token_data = {
+              "client_id": client_id,
+              "client_secret": client_secret,
+              "refresh_token": refresh_token,
+              "grant_type": "refresh_token"
+          }
+          r = requests.post(token_url, data=token_data)
+          token_json = r.json()
+          access_token = token_json.get("access_token")
+
+          if not access_token:
+              print("Errore durante l'aggiornamento del token:", r.text)
+              exit(1)
+
+          headers = {"Authorization": f"Bearer {access_token}"}
           file_path = 'main.pdf'
           file_name = 'main.pdf'
 
-          headers = {"Authorization": f"Bearer {token}"}
-
-          # 1. Cerca se il file esiste già nella cartella
+          # 2. Cerca se il file esiste già nella cartella
           query = f"'{folder_id}' in parents and name = '{file_name}' and trashed = false"
           r = requests.get(
               "https://www.googleapis.com/drive/v3/files",
               headers=headers,
-              params={"q": query, "supportsAllDrives": "true", "includeItemsFromAllDrives": "true"}
+              params={"q": query}
           )
           files = r.json().get('files', [])
 
-          # 2. Prepara i metadati
           metadata = {
               'name': file_name,
               'parents': [folder_id]
           }
 
-          # 3. Caricamento o Aggiornamento via multipart upload
           files_data = {
-              'data': ('metadata', json.dumps(metadata), 'application/json'),
+              'data': ('metadata', str(metadata).replace("'", '"'), 'application/json'),
               'file': ('media', open(file_path, 'rb'), 'application/pdf')
           }
 
+          # 3. Aggiorna o crea il file sfruttando il tuo spazio personale
           if files:
               file_id = files[0]['id']
-              print(f"File esistente trovato (ID: {file_id}), aggiorno...")
+              print(f"Aggiornamento file esistente su Google Drive (ID: {file_id})...")
               response = requests.patch(
-                  f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=multipart&supportsAllDrives=true",
+                  f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=multipart",
                   headers=headers,
                   files=files_data
               )
           else:
-              print("Il file non esiste, lo creo ex-novo...")
+              print("Creazione nuovo file su Google Drive...")
               response = requests.post(
-                  "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true",
+                  "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
                   headers=headers,
                   files=files_data
               )
