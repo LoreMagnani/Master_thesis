@@ -16,62 +16,11 @@ jobs:
         with:
           root_file: main.tex
 
-      - name: Installa librerie Google Drive
-        run: pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
-
       - name: Carica su Google Drive
-        env:
-          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
-          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
-        run: |
-          python - << 'EOF'
-          import os
-          import json
-          from google.oauth2 import service_account
-          from googleapiclient.discovery import build
-          from googleapiclient.http import MediaFileUpload
-
-          creds_json = os.environ.get("GDRIVE_CREDENTIALS")
-          folder_id = os.environ.get("GDRIVE_FOLDER_ID")
-          
-          info = json.loads(creds_json)
-          creds = service_account.Credentials.from_service_account_info(
-              info, scopes=['https://www.googleapis.com/auth/drive']
-          )
-          service = build('drive', 'v3', credentials=creds)
-
-          file_name = 'main.pdf'
-          
-          # Cerca se il file esiste già nella cartella per aggiornarlo
-          query = f"'{folder_id}' in parents and name = '{file_name}' and trashed = false"
-          results = service.files().list(
-              q=query, 
-              fields="files(id, name)",
-              supportsAllDrives=True,
-              includeItemsFromAllDrives=True
-          ).execute()
-          files = results.get('files', [])
-
-          media = MediaFileUpload(file_name, mimetype='application/pdf')
-
-          if files:
-              file_id = files[0]['id']
-              updated_file = service.files().update(
-                  fileId=file_id,
-                  media_body=media,
-                  supportsAllDrives=True
-              ).execute()
-              print(f"File aggiornato con successo su Google Drive! ID: {file_id}")
-          else:
-              file_metadata = {
-                  'name': file_name,
-                  'parents': [folder_id]
-              }
-              file = service.files().create(
-                  body=file_metadata,
-                  media_body=media,
-                  fields='id',
-                  supportsAllDrives=True
-              ).execute()
-              print(f"File caricato con successo su Google Drive! ID: {file.get('id')}")
-          EOF
+        uses: Jms6/google-drive-upload-action@v1.2.1
+        with:
+          gdrive-credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          parent-folder-id: ${{ secrets.GDRIVE_FOLDER_ID }}
+          filename: main.pdf
+          name: main.pdf
+          overwrite: true
