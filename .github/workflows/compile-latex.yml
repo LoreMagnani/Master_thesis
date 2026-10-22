@@ -31,7 +31,6 @@ jobs:
           from googleapiclient.discovery import build
           from googleapiclient.http import MediaFileUpload
 
-          # Leggi le credenziali dai Secrets di GitHub
           creds_json = os.environ.get("GDRIVE_CREDENTIALS")
           folder_id = os.environ.get("GDRIVE_FOLDER_ID")
           
@@ -43,23 +42,27 @@ jobs:
 
           file_name = 'main.pdf'
           
-          # Cerca se il file esiste già nella cartella di Drive per aggiornarlo (evita duplicati)
+          # Cerca se il file esiste già nella cartella per aggiornarlo
           query = f"'{folder_id}' in parents and name = '{file_name}' and trashed = false"
-          results = service.files().list(q=query, fields="files(id, name)").execute()
+          results = service.files().list(
+              q=query, 
+              fields="files(id, name)",
+              supportsAllDrives=True,
+              includeItemsFromAllDrives=True
+          ).execute()
           files = results.get('files', [])
 
           media = MediaFileUpload(file_name, mimetype='application/pdf')
 
           if files:
-              # Aggiorna il file esistente
               file_id = files[0]['id']
               updated_file = service.files().update(
                   fileId=file_id,
-                  media_body=media
+                  media_body=media,
+                  supportsAllDrives=True
               ).execute()
               print(f"File aggiornato con successo su Google Drive! ID: {file_id}")
           else:
-              # Crea un nuovo file se non esiste
               file_metadata = {
                   'name': file_name,
                   'parents': [folder_id]
@@ -67,7 +70,8 @@ jobs:
               file = service.files().create(
                   body=file_metadata,
                   media_body=media,
-                  fields='id'
+                  fields='id',
+                  supportsAllDrives=True
               ).execute()
               print(f"File caricato con successo su Google Drive! ID: {file.get('id')}")
           EOF
