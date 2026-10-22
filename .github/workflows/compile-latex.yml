@@ -17,10 +17,72 @@ jobs:
           root_file: main.tex
 
       - name: Carica su Google Drive
-        uses: Jms6/google-drive-upload-action@v1.2.1
-        with:
-          gdrive-credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
-          parent-folder-id: ${{ secrets.GDRIVE_FOLDER_ID }}
-          filename: main.pdf
-          name: main.pdf
-          overwrite: true
+        env:
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: |
+          python3 - << 'EOF'
+          import os
+          import json
+          from google.oauth2 import service_account
+          import google.auth.transport.requests
+          import requests
+
+          creds_json = os.environ.get("GDRIVE_CREDENTIALS")
+          folder_id = os.environ.get("GDRIVE_FOLDER_ID")
+          
+          info = json.loads(creds_json)
+          creds = service_account.Credentials.from_service_account_info(
+              info, scopes=['https://www.googleapis.com/auth/drive']
+          )
+          
+          auth_req = google.auth.transport.requests.Request()
+          creds.refresh(auth_req)
+          token = creds.token
+
+          file_path = 'main.pdf'
+          file_name = 'main.pdf'
+
+          headers = {"Authorization": f"Bearer {token}"}
+
+          # 1. Cerca se il file esiste già nella cartella
+          query = f"'{folder_id}' in parents and name = '{file_name}' and trashed = false"
+          r = requests.get(
+              "https://www.googleapis.com/drive/v3/files",
+              headers=headers,
+              params={"q": query, "supportsAllDrives": "true", "includeItemsFromAllDrives": "true"}
+          )
+          files = r.json().get('files', [])
+
+          # 2. Prepara i metadati
+          metadata = {
+              'name': file_name,
+              'parents': [folder_id]
+          }
+
+          # 3. Caricamento o Aggiornamento via multipart upload
+          files_data = {
+              'data': ('metadata', json.dumps(metadata), 'application/json'),
+              'file': ('media', open(file_path, 'rb'), 'application/pdf')
+          }
+
+          if files:
+              file_id = files[0]['id']
+              print(f"File esistente trovato (ID: {file_id}), aggiorno...")
+              response = requests.patch(
+                  f"https://www.googleapis.com/upload/drive/v3/files/{file_id}?uploadType=multipart&supportsAllDrives=true",
+                  headers=headers,
+                  files=files_data
+              )
+          else:
+              print("Il file non esiste, lo creo ex-novo...")
+              response = requests.post(
+                  "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true",
+                  headers=headers,
+                  files=files_data
+              )
+
+          print("Risposta Google Drive:", response.status_code, response.text)
+          if response.status_code not in [200, 201]:
+              exit(1)
+          EOF
